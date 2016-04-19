@@ -101,10 +101,10 @@ public class CreateDCode {
      * 获取二维码位置信息
      *
      * @param matrix
-     * @param rect
-     * @return
+     * @param rect 带回二维码边界
+     * @return 返回单个信息点的宽
      */
-    private static int checkSize(BitMatrix matrix, Rect rect) {
+    private static int checkParam(BitMatrix matrix, Rect rect) {
         int width = matrix.getWidth();
         int height = matrix.getHeight();
 
@@ -171,7 +171,7 @@ public class CreateDCode {
             BitMatrix matrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, size, size, hints);
 
             Rect codeRect = new Rect();
-            int cellWidth = checkSize(matrix, codeRect);
+            int cellWidth = checkParam(matrix, codeRect);
 
             int width = matrix.getWidth();
             int height = matrix.getHeight();
@@ -221,7 +221,7 @@ public class CreateDCode {
             BitMatrix matrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, size, size, hints);
 
             Rect codeRect = new Rect();
-            int cellWidth = checkSize(matrix, codeRect);
+            int cellWidth = checkParam(matrix, codeRect);
 
             int width = matrix.getWidth();
             int height = matrix.getHeight();
@@ -284,7 +284,7 @@ public class CreateDCode {
             BitMatrix matrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, size, size, hints);
 
             Rect codeRect = new Rect();
-            int cellWidth = checkSize(matrix, codeRect);
+            int cellWidth = checkParam(matrix, codeRect);
 
             int width = matrix.getWidth();
             int height = matrix.getHeight();
@@ -340,7 +340,7 @@ public class CreateDCode {
             BitMatrix matrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, size, size, hints);
 
             Rect codeRect = new Rect();
-            int cellWidth = checkSize(matrix, codeRect);
+            int cellWidth = checkParam(matrix, codeRect);
 
             int width = matrix.getWidth();
             int height = matrix.getHeight();
@@ -404,7 +404,7 @@ public class CreateDCode {
             BitMatrix matrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, size, size, hints);
 
             Rect codeRect = new Rect();
-            int cellWidth = checkSize(matrix, codeRect);
+            int cellWidth = checkParam(matrix, codeRect);
 
             int width = matrix.getWidth();
             int height = matrix.getHeight();
@@ -469,7 +469,7 @@ public class CreateDCode {
             BitMatrix matrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, size, size, hints);
 
             Rect codeRect = new Rect();
-            int cellWidth = checkSize(matrix, codeRect);
+            int cellWidth = checkParam(matrix, codeRect);
 
             int width = matrix.getWidth();
             int height = matrix.getHeight();
