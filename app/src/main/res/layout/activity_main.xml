@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    tools:context="com.ybao.qrcode.MainActivity">
+
+    <Button
+        android:id="@+id/btn1"
+        android:layout_width="match_parent"
+        android:layout_height="50dip"
+        android:text="普通二维码" />
+
+    <Button
+        android:id="@+id/btn2"
+        android:layout_width="match_parent"
+        android:layout_height="50dip"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="圆点二维码" />
+
+    <Button
+        android:id="@+id/btn3"
+        android:layout_width="match_parent"
+        android:layout_height="50dip"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="随机大小圆点二维码" />
+
+    <Button
+        android:id="@+id/btn4"
+        android:layout_width="match_parent"
+        android:layout_height="50dip"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="液化二维码" />
+
+    <Button
+        android:id="@+id/btn5"
+        android:layout_width="match_parent"
+        android:layout_height="50dip"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="多边形二维码" />
+
+    <Button
+        android:id="@+id/btn6"
+        android:layout_width="match_parent"
+        android:layout_height="50dip"
+        android:layout_marginTop="@dimen/activity_vertical_margin"
+        android:text="多角星二维码" />
+</LinearLayout>
