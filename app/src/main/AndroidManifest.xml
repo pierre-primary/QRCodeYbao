@@ -15,12 +15,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".NCodeActivity" />
-        <activity android:name=".RCodeActivity" />
-        <activity android:name=".SRCodeActivity" />
-        <activity android:name=".RRCodeActivity" />
-        <activity android:name=".BCodeActivity" />
-        <activity android:name=".STCodeActivity" />
+        <activity android:name=".NCodeActivity" android:label="普通二维码"/>
+        <activity android:name=".RCodeActivity" android:label="圆点二维码"/>
+        <activity android:name=".SRCodeActivity" android:label="随机大小圆点二维码"/>
+        <activity android:name=".RRCodeActivity" android:label="液化二维码"/>
+        <activity android:name=".BCodeActivity" android:label="多边形二维码"/>
+        <activity android:name=".STCodeActivity" android:label="多角星二维码"/>
+        <activity android:name=".BitmapCodeActivity" android:label="图像二维码"/>
     </application>
 
 </manifest>
