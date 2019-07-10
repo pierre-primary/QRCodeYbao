@@ -19,8 +19,7 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String CONTENT = "http://watch.okii.com/d/abcdefghijklmn";
-    //    private static final String CONTENT = "作者：江鹏源; QQ:392579823";
+    private static final String CONTENT = "作者：江鹏源; QQ:392579823";
     private static final int SIZE = 1000;
 
     private static final int QR_COLOR = 0xff000000, BG_COLOR = 0x0;
