@@ -81,6 +81,7 @@ public class MainActivity extends AppCompatActivity {
         this.typeId = typeId;
         switch (typeId) {
             case R.id.type_dot:
+            case R.id.type_dot_puls:
             case R.id.type_polygon:
             case R.id.type_star:
             case R.id.type_smooth:
@@ -124,6 +125,10 @@ public class MainActivity extends AppCompatActivity {
                             PADDING);
                 case R.id.type_img:
                     return CreateDCode.CreateQRCodeBitmap(CONTENT, new int[]{1000, 1000}, bitmaps, BG_COLOR,
+                            PADDING);
+                case R.id.type_dot_puls:
+                    value = num / 100f;
+                    return CreateDCode.CreateQRCodeDotPlus(CONTENT, value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR},
                             PADDING);
             }
         } catch (Exception e) {

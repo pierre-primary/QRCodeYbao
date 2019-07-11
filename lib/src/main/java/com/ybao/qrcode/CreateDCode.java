@@ -76,8 +76,6 @@ public class CreateDCode {
 
         int cellWidth = Math.min((outputWidth - padding * 2) / originalWidth, (outputHeight - padding * 2) / originalHeight);
 
-        int cellMid = cellWidth / 2;
-
         int outputLeft = (outputWidth - cellWidth * originalWidth) / 2;
         int outputTop = (outputHeight - cellWidth * originalHeight) / 2;
 
@@ -502,6 +500,91 @@ public class CreateDCode {
                 }
             }
         }
+        return bitmap;
+    }
+
+
+    /**
+     * 圆点二维码 增强
+     *
+     * @param content
+     * @param sizes
+     * @return
+     */
+    public static Bitmap CreateQRCodeDotPlus(String content, float psRandom, int[] sizes, int[] colors, int padding) throws Exception {
+        int outputWidth = sizes[0], outputHeight = sizes[1];
+        int qrColor = colors[0], bgColor = colors[1];
+
+        Map<EncodeHintType, Object> hints = new HashMap<>();
+        hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
+        QRCode qrCode = Encoder.encode(content, ErrorCorrectionLevel.H, hints);
+
+        ByteMatrix matrix = qrCode.getMatrix();
+        int originalWidth = matrix.getWidth();
+        int originalHeight = matrix.getHeight();
+
+        outputWidth = Math.max(originalWidth, outputWidth);
+        outputHeight = Math.max(originalHeight, outputHeight);
+
+        int originalPadding = Math.min(outputWidth / (originalWidth + 2), outputHeight / (originalHeight + 2));
+        padding = Math.max(padding, originalPadding);
+
+        int cellWidth = Math.min((outputWidth - padding * 2) / originalWidth, (outputHeight - padding * 2) / originalHeight);
+
+        int rightWidth = cellWidth * originalWidth;
+        int rightHeight = cellWidth * originalHeight;
+
+        int outputLeft = (outputWidth - rightWidth) / 2;
+        int outputTop = (outputHeight - rightHeight) / 2;
+        int outputRight = outputLeft + rightWidth;
+        int outputBottom = outputTop + rightHeight;
+
+        int cellMid = cellWidth / 2;
+
+        double randomRange = 0.25 * psRandom;
+
+        Paint paint = new Paint();
+        paint.setColor(qrColor);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setAntiAlias(true);
+
+        Bitmap bitmap = Bitmap.createBitmap(outputWidth, outputHeight, Bitmap.Config.ARGB_8888);
+        bitmap.eraseColor(bgColor);
+        Canvas canvas = new Canvas(bitmap);
+
+        for (int y = 0; y < originalHeight; y++) {
+            for (int x = 0; x < originalWidth; x++) {
+                int outputY = outputTop + y * cellWidth + cellMid;
+                int outputX = outputLeft + x * cellWidth + cellMid;
+                if (matrix.get(x, y) == 1) {
+                    if ((x < 7 && y < 7) || (x >= originalWidth - 7 && y < 7) || (x < 7 && y >= originalHeight - 7)) {
+                        continue;
+                    }
+                    int r;
+                    if (randomRange == 0) {
+                        r = cellMid;
+                    } else {
+                        r = (int) ((1 + (Math.random() - 0.5) * randomRange * 2) * cellMid);
+                    }
+                    canvas.drawCircle(outputX, outputY, r, paint);
+                }
+            }
+        }
+        int circleP = 7 * cellWidth / 2;
+        int smCircleR = (int) (3 * cellWidth / 2 );
+        canvas.drawCircle(outputLeft + circleP, outputTop + circleP, smCircleR, paint);
+        canvas.drawCircle(outputRight - circleP, outputTop + circleP, smCircleR, paint);
+        canvas.drawCircle(outputLeft + circleP, outputBottom - circleP, smCircleR, paint);
+
+        int bigCircleR = 7 * cellWidth / 2 - cellMid;
+        Paint bigCirclePaint = new Paint();
+        bigCirclePaint.setColor(qrColor);
+        bigCirclePaint.setStyle(Paint.Style.STROKE);
+        bigCirclePaint.setAntiAlias(true);
+        bigCirclePaint.setStrokeWidth(cellWidth);
+        canvas.drawCircle(outputLeft + circleP, outputTop + circleP, bigCircleR, bigCirclePaint);
+        canvas.drawCircle(outputRight - circleP, outputTop + circleP, bigCircleR, bigCirclePaint);
+        canvas.drawCircle(outputLeft + circleP, outputBottom - circleP, bigCircleR, bigCirclePaint);
         return bitmap;
     }
 
