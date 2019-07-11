@@ -6,6 +6,10 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextUtils;
+import android.text.TextWatcher;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RadioGroup;
 import android.widget.SeekBar;
@@ -35,6 +39,7 @@ public class MainActivity extends AppCompatActivity {
     private RadioGroup radioGroup;
     private SeekBar seekBar;
     private Switch switch1;
+    private EditText editText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +49,23 @@ public class MainActivity extends AppCompatActivity {
         radioGroup = findViewById(R.id.radio_group);
         seekBar = findViewById(R.id.seekBar);
         switch1 = findViewById(R.id.switch1);
+        editText = findViewById(R.id.editText);
+        editText.setText(CONTENT);
+        editText.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                update();
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
 
         radioGroup.setOnCheckedChangeListener((radioGroup, i) -> {
             init(radioGroup.getCheckedRadioButtonId());
@@ -102,33 +124,34 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private Bitmap create() {
+        String content = editText.getText().toString();
         try {
             switch (typeId) {
                 case R.id.type_general:
-                    return CreateDCode.CreateQRCode(CONTENT, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR},
+                    return CreateDCode.CreateQRCode(content, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR},
                             PADDING);
                 case R.id.type_dot:
                     float value = num / 100f;
-                    return CreateDCode.CreateQRCodeDot(CONTENT, value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR},
+                    return CreateDCode.CreateQRCodeDot(content, value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR},
                             PADDING);
                 case R.id.type_polygon:
                     value = num / 100f * (10 - 3) + 3;
-                    return CreateDCode.CreateQRCodePolygon(CONTENT, (int) value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR},
+                    return CreateDCode.CreateQRCodePolygon(content, (int) value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR},
                             PADDING);
                 case R.id.type_star:
                     value = num / 100f * (10 - 3) + 3;
-                    return CreateDCode.CreateQRCodeStar(CONTENT, (int) value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR},
+                    return CreateDCode.CreateQRCodeStar(content, (int) value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR},
                             PADDING);
                 case R.id.type_smooth:
                     value = num / 100f;
-                    return CreateDCode.CreateQRCodeSmooth(CONTENT, value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR},
+                    return CreateDCode.CreateQRCodeSmooth(content, value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR},
                             PADDING);
                 case R.id.type_img:
-                    return CreateDCode.CreateQRCodeBitmap(CONTENT, new int[]{1000, 1000}, bitmaps, BG_COLOR,
+                    return CreateDCode.CreateQRCodeBitmap(content, new int[]{1000, 1000}, bitmaps, BG_COLOR,
                             PADDING);
                 case R.id.type_dot_puls:
                     value = num / 100f;
-                    return CreateDCode.CreateQRCodeDotPlus(CONTENT, value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR},
+                    return CreateDCode.CreateQRCodeDotPlus(content, value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR},
                             PADDING);
             }
         } catch (Exception e) {

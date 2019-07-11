@@ -12,12 +12,12 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.decoder.ErrorCorrectionLevel;
+import com.google.zxing.qrcode.decoder.Version;
 import com.google.zxing.qrcode.encoder.ByteMatrix;
 import com.google.zxing.qrcode.encoder.Encoder;
 import com.google.zxing.qrcode.encoder.QRCode;
 
 import java.util.HashMap;
-import java.util.Hashtable;
 import java.util.Map;
 
 /**
@@ -522,6 +522,10 @@ public class CreateDCode {
         ByteMatrix matrix = qrCode.getMatrix();
         int originalWidth = matrix.getWidth();
         int originalHeight = matrix.getHeight();
+        Version qrVersion = qrCode.getVersion();
+
+        int correcLevel = (int) Math.sqrt(qrVersion.getVersionNumber() + 2);
+//        int correcLevel = (int) Math.sqrt((qrVersion.getDimensionForVersion() - 21) / 4 + 3);
 
         outputWidth = Math.max(originalWidth, outputWidth);
         outputHeight = Math.max(originalHeight, outputHeight);
@@ -543,23 +547,69 @@ public class CreateDCode {
 
         double randomRange = 0.25 * psRandom;
 
+        Bitmap bitmap = Bitmap.createBitmap(outputWidth, outputHeight, Bitmap.Config.ARGB_8888);
+        bitmap.eraseColor(bgColor);
+        Canvas canvas = new Canvas(bitmap);
+
         Paint paint = new Paint();
         paint.setColor(qrColor);
         paint.setStyle(Paint.Style.FILL);
         paint.setAntiAlias(true);
 
-        Bitmap bitmap = Bitmap.createBitmap(outputWidth, outputHeight, Bitmap.Config.ARGB_8888);
-        bitmap.eraseColor(bgColor);
-        Canvas canvas = new Canvas(bitmap);
+        BitMatrix ignoreMatrix = new BitMatrix(originalWidth, originalHeight);
+
+        int circleP = 7 * cellMid;
+        int circleSmR = 3 * cellMid;
+        Paint bigCirclePaint = new Paint();
+        bigCirclePaint.setColor(qrColor);
+        bigCirclePaint.setStyle(Paint.Style.STROKE);
+        bigCirclePaint.setAntiAlias(true);
+        bigCirclePaint.setStrokeWidth(cellWidth);
+        canvas.drawCircle(outputLeft + circleP, outputTop + circleP, circleSmR, paint);
+        canvas.drawCircle(outputRight - circleP, outputTop + circleP, circleSmR, paint);
+        canvas.drawCircle(outputLeft + circleP, outputBottom - circleP, circleSmR, paint);
+        int circleR = 6 * cellMid;
+        canvas.drawCircle(outputLeft + circleP, outputTop + circleP, circleR, bigCirclePaint);
+        canvas.drawCircle(outputRight - circleP, outputTop + circleP, circleR, bigCirclePaint);
+        canvas.drawCircle(outputLeft + circleP, outputBottom - circleP, circleR, bigCirclePaint);
+        ignoreMatrix.setRegion(0, 0, 7, 7);
+        ignoreMatrix.setRegion(originalWidth - 7, 0, 7, 7);
+        ignoreMatrix.setRegion(0, originalHeight - 7, 7, 7);
+
+        if (correcLevel >= 2) {
+            int correctSmR = (int) (cellMid * 1.25);
+            int correctR = 4 * cellMid;
+            int correcSpan = (originalWidth - 13) / (correcLevel - 1);
+
+            Paint correcPaint = new Paint();
+            correcPaint.setColor(qrColor);
+            correcPaint.setStyle(Paint.Style.STROKE);
+            correcPaint.setAntiAlias(true);
+            correcPaint.setStrokeWidth((int) (cellWidth * 0.75));
+
+            for (int y = 0; y < correcLevel; y++) {
+                for (int x = 0; x < correcLevel; x++) {
+                    if ((x == 0 && y == 0) || (x == correcLevel - 1 && y == 0) || (x == 0 && y == correcLevel - 1)) {
+                        continue;
+                    }
+                    int pX = 6 + x * correcSpan;
+                    int pY = 6 + y * correcSpan;
+
+                    int outputY = outputTop + pY * cellWidth + cellMid;
+                    int outputX = outputLeft + pX * cellWidth + cellMid;
+                    canvas.drawCircle(outputX, outputY, correctSmR, paint);
+                    canvas.drawCircle(outputX, outputY, correctR, correcPaint);
+
+                    ignoreMatrix.setRegion(pX - 2, pY - 2, 5, 5);
+                }
+            }
+        }
 
         for (int y = 0; y < originalHeight; y++) {
             for (int x = 0; x < originalWidth; x++) {
                 int outputY = outputTop + y * cellWidth + cellMid;
                 int outputX = outputLeft + x * cellWidth + cellMid;
-                if (matrix.get(x, y) == 1) {
-                    if ((x < 7 && y < 7) || (x >= originalWidth - 7 && y < 7) || (x < 7 && y >= originalHeight - 7)) {
-                        continue;
-                    }
+                if (matrix.get(x, y) == 1 && !ignoreMatrix.get(x, y)) {
                     int r;
                     if (randomRange == 0) {
                         r = cellMid;
@@ -570,22 +620,45 @@ public class CreateDCode {
                 }
             }
         }
-        int circleP = 7 * cellWidth / 2;
-        int smCircleR = (int) (3 * cellWidth / 2 );
-        canvas.drawCircle(outputLeft + circleP, outputTop + circleP, smCircleR, paint);
-        canvas.drawCircle(outputRight - circleP, outputTop + circleP, smCircleR, paint);
-        canvas.drawCircle(outputLeft + circleP, outputBottom - circleP, smCircleR, paint);
-
-        int bigCircleR = 7 * cellWidth / 2 - cellMid;
-        Paint bigCirclePaint = new Paint();
-        bigCirclePaint.setColor(qrColor);
-        bigCirclePaint.setStyle(Paint.Style.STROKE);
-        bigCirclePaint.setAntiAlias(true);
-        bigCirclePaint.setStrokeWidth(cellWidth);
-        canvas.drawCircle(outputLeft + circleP, outputTop + circleP, bigCircleR, bigCirclePaint);
-        canvas.drawCircle(outputRight - circleP, outputTop + circleP, bigCircleR, bigCirclePaint);
-        canvas.drawCircle(outputLeft + circleP, outputBottom - circleP, bigCircleR, bigCirclePaint);
         return bitmap;
+    }
+
+    public Bitmap createQrCodeCarry(String content, int[] sizes, int[] colors, Bitmap[] bitmaps, int padding) throws Exception {
+        int outputWidth = sizes[0], outputHeight = sizes[1];
+        int qrColor = colors[0], bgColor = colors[1];
+
+        Map<EncodeHintType, Object> hints = new HashMap<>();
+        hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
+        QRCode qrCode = Encoder.encode(content, ErrorCorrectionLevel.H, hints);
+
+        ByteMatrix matrix = qrCode.getMatrix();
+        int originalWidth = matrix.getWidth();
+        int originalHeight = matrix.getHeight();
+
+        outputWidth = Math.max(originalWidth, outputWidth);
+        outputHeight = Math.max(originalHeight, outputHeight);
+
+        int originalPadding = Math.min(outputWidth / (originalWidth + 2), outputHeight / (originalHeight + 2));
+        padding = Math.max(padding, originalPadding);
+
+        int cellWidth = Math.min((outputWidth - padding * 2) / originalWidth, (outputHeight - padding * 2) / originalHeight);
+
+        int rightWidth = cellWidth * originalWidth;
+        int rightHeight = cellWidth * originalHeight;
+
+        int outputLeft = (outputWidth - rightWidth) / 2;
+        int outputTop = (outputHeight - rightHeight) / 2;
+        int outputRight = outputLeft + rightWidth;
+        int outputBottom = outputTop + rightHeight;
+
+        int cellMid = cellWidth / 2;
+
+        for (int y = 0; y < originalHeight; y++) {
+            for (int x = 0; x < originalWidth; x++) {
+
+            }
+        }
+        return null;
     }
 
 
