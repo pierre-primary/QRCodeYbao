@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="10dp"
+    tools:context=".MainActivity">
+
+
+    <ImageView
+        android:id="@+id/qrcodeImg"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:scaleType="centerInside" />
+
+    <EditText
+        android:id="@+id/qrcodeContentEdt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:maxLines="2" />
+
+    <com.ybao.qrcode.demo.FlowRadioGroup
+        android:id="@+id/qrcodeTypeRGroup"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal">
+
+        <RadioButton
+            android:id="@+id/qrcodeTypeGeneralRBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="普通" />
+
+        <RadioButton
+            android:id="@+id/qrcodeTypeDotRBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="圆点" />
+
+        <RadioButton
+            android:id="@+id/qrcodeTypePolygonRBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="多边形" />
+
+        <RadioButton
+            android:id="@+id/qrcodeTypeStarRBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="N角星" />
+
+        <RadioButton
+            android:id="@+id/qrcodeTypeSmoothRBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="液化" />
+
+        <RadioButton
+            android:id="@+id/qrcodeTypeImgRBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="图标" />
+
+        <RadioButton
+            android:id="@+id/qrcodeTypeDotPulsRBtn"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="圆点增强" />
+
+    </com.ybao.qrcode.demo.FlowRadioGroup>
+
+    <SeekBar
+        android:id="@+id/qrcodeSeekBar"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp" />
+
+    <Switch
+        android:id="@+id/qrcodeWithIconSt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="15dp"
+        android:text="附加ICON" />
+</LinearLayout>
