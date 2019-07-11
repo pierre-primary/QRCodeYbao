@@ -2,7 +2,6 @@ package com.ybao.qrcode;
 
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -57,42 +56,7 @@ public class CreateDCode {
     /*
      * 普通二维码
      */
-    public static Bitmap CreateQRCode(String content, int[] sizes, int[] colors) throws Exception {
-        int outputWidth = sizes[0], outputHeight = sizes[1];
-        int qrColor = colors[0], bgColor = colors[1];
-
-        Hashtable<EncodeHintType, Object> hints = new Hashtable<EncodeHintType, Object>();
-        hints.put(EncodeHintType.ERROR_CORRECTION, ErrorCorrectionLevel.H);
-        hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
-        hints.put(EncodeHintType.MARGIN, 1);
-        BitMatrix matrix = new MultiFormatWriter().encode(content, BarcodeFormat.QR_CODE, outputWidth, outputHeight, hints);
-        int width = matrix.getWidth();
-        int height = matrix.getHeight();
-        int[] pixels = new int[width * height];
-        for (int y = 0; y < height; y++) {
-            for (int x = 0; x < width; x++) {
-                if (matrix.get(x, y)) {
-                    pixels[y * width + x] = qrColor;
-                } else {
-                    pixels[y * width + x] = bgColor;
-                }
-            }
-        }
-
-        Bitmap bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888);
-        // 通过像素数组生成bitmap,具体参考api
-        bitmap.setPixels(pixels, 0, outputWidth, 0, 0, outputWidth, outputHeight);
-        return bitmap;
-    }
-
-    /**
-     * 圆点二维码
-     *
-     * @param content
-     * @param sizes
-     * @return
-     */
-    public static Bitmap CreateQRCodeDot(String content, float psRandom, int[] sizes, int[] colors) throws Exception {
+    public static Bitmap CreateQRCode(String content, int[] sizes, int[] colors, int padding) throws Exception {
         int outputWidth = sizes[0], outputHeight = sizes[1];
         int qrColor = colors[0], bgColor = colors[1];
 
@@ -107,15 +71,70 @@ public class CreateDCode {
         outputWidth = Math.max(originalWidth, outputWidth);
         outputHeight = Math.max(originalHeight, outputHeight);
 
-        int cellWidth = Math.min(outputWidth / originalWidth, outputHeight / originalHeight);
-        double randomRange = 0.25 * psRandom;
-        outputWidth = (int) (outputWidth + cellWidth * randomRange);
-        outputHeight = (int) (outputWidth + cellWidth * randomRange);
+        int originalPadding = Math.min(outputWidth / (originalWidth + 2), outputHeight / (originalHeight + 2));
+        padding = Math.max(padding, originalPadding);
+
+        int cellWidth = Math.min((outputWidth - padding * 2) / originalWidth, (outputHeight - padding * 2) / originalHeight);
+
+        int cellMid = cellWidth / 2;
+
+        int outputLeft = (outputWidth - cellWidth * originalWidth) / 2;
+        int outputTop = (outputHeight - cellWidth * originalHeight) / 2;
+
+        Paint paint = new Paint();
+        paint.setColor(qrColor);
+        paint.setStyle(Paint.Style.FILL);
+        paint.setAntiAlias(true);
+
+        Bitmap bitmap = Bitmap.createBitmap(outputWidth, outputHeight, Bitmap.Config.ARGB_8888);
+        bitmap.eraseColor(bgColor);
+        Canvas canvas = new Canvas(bitmap);
+
+        for (int y = 0; y < originalHeight; y++) {
+            for (int x = 0; x < originalWidth; x++) {
+                int outputY = outputTop + y * cellWidth;
+                int outputX = outputLeft + x * cellWidth;
+                if (matrix.get(x, y) == 1) {
+                    canvas.drawRect(outputX, outputY, outputX + cellWidth, outputY + cellWidth, paint);
+                }
+            }
+        }
+        return bitmap;
+    }
+
+    /**
+     * 圆点二维码
+     *
+     * @param content
+     * @param sizes
+     * @return
+     */
+    public static Bitmap CreateQRCodeDot(String content, float psRandom, int[] sizes, int[] colors, int padding) throws Exception {
+        int outputWidth = sizes[0], outputHeight = sizes[1];
+        int qrColor = colors[0], bgColor = colors[1];
+
+        Map<EncodeHintType, Object> hints = new HashMap<>();
+        hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
+        QRCode qrCode = Encoder.encode(content, ErrorCorrectionLevel.H, hints);
+
+        ByteMatrix matrix = qrCode.getMatrix();
+        int originalWidth = matrix.getWidth();
+        int originalHeight = matrix.getHeight();
+
+        outputWidth = Math.max(originalWidth, outputWidth);
+        outputHeight = Math.max(originalHeight, outputHeight);
+
+        int originalPadding = Math.min(outputWidth / (originalWidth + 2), outputHeight / (originalHeight + 2));
+        padding = Math.max(padding, originalPadding);
+
+        int cellWidth = Math.min((outputWidth - padding * 2) / originalWidth, (outputHeight - padding * 2) / originalHeight);
 
         int outputLeft = (outputWidth - cellWidth * originalWidth) / 2;
         int outputTop = (outputHeight - cellWidth * originalHeight) / 2;
 
         int cellMid = cellWidth / 2;
+
+        double randomRange = 0.25 * psRandom;
 
         Paint paint = new Paint();
         paint.setColor(qrColor);
@@ -153,7 +172,7 @@ public class CreateDCode {
      * @return
      */
 
-    public static Bitmap CreateQRCodePolygon(String content, int lCount, int[] sizes, int[] colors) throws Exception {
+    public static Bitmap CreateQRCodePolygon(String content, int lCount, int[] sizes, int[] colors, int padding) throws Exception {
         if (lCount < 3) {
             lCount = 3;
         }
@@ -172,7 +191,10 @@ public class CreateDCode {
         outputWidth = Math.max(originalWidth, outputWidth);
         outputHeight = Math.max(originalHeight, outputHeight);
 
-        int cellWidth = Math.min(outputWidth / originalWidth, outputHeight / originalHeight);
+        int originalPadding = Math.min(outputWidth / (originalWidth + 2), outputHeight / (originalHeight + 2));
+        padding = Math.max(padding, originalPadding);
+
+        int cellWidth = Math.min((outputWidth - padding * 2) / originalWidth, (outputHeight - padding * 2) / originalHeight);
 
         int outputLeft = (outputWidth - cellWidth * originalWidth) / 2;
         int outputTop = (outputHeight - cellWidth * originalHeight) / 2;
@@ -220,7 +242,7 @@ public class CreateDCode {
      * @param sizes
      * @return
      */
-    public static Bitmap CreateQRCodeStar(String content, int lCount, int[] sizes, int[] colors) throws Exception {
+    public static Bitmap CreateQRCodeStar(String content, int lCount, int[] sizes, int[] colors, int padding) throws Exception {
         if (lCount < 3) {
             lCount = 3;
         }
@@ -239,7 +261,10 @@ public class CreateDCode {
         outputWidth = Math.max(originalWidth, outputWidth);
         outputHeight = Math.max(originalHeight, outputHeight);
 
-        int cellWidth = Math.min(outputWidth / originalWidth, outputHeight / originalHeight);
+        int originalPadding = Math.min(outputWidth / (originalWidth + 2), outputHeight / (originalHeight + 2));
+        padding = Math.max(padding, originalPadding);
+
+        int cellWidth = Math.min((outputWidth - padding * 2) / originalWidth, (outputHeight - padding * 2) / originalHeight);
 
         int outputLeft = (outputWidth - cellWidth * originalWidth) / 2;
         int outputTop = (outputHeight - cellWidth * originalHeight) / 2;
@@ -295,7 +320,7 @@ public class CreateDCode {
      * @param psR
      * @return
      */
-    public static Bitmap CreateQRCodeSmooth(String content, float psR, int[] sizes, int[] colors) throws Exception {
+    public static Bitmap CreateQRCodeSmooth(String content, float psR, int[] sizes, int[] colors, int padding) throws Exception {
         int outputWidth = sizes[0], outputHeight = sizes[1];
         int qrColor = colors[0], bgColor = colors[1];
 
@@ -310,7 +335,10 @@ public class CreateDCode {
         outputWidth = Math.max(originalWidth, outputWidth);
         outputHeight = Math.max(originalHeight, outputHeight);
 
-        int cellWidth = Math.min(outputWidth / originalWidth, outputHeight / originalHeight);
+        int originalPadding = Math.min(outputWidth / (originalWidth + 2), outputHeight / (originalHeight + 2));
+        padding = Math.max(padding, originalPadding);
+
+        int cellWidth = Math.min((outputWidth - padding * 2) / originalWidth, (outputHeight - padding * 2) / originalHeight);
 
         int outputLeft = (outputWidth - cellWidth * originalWidth) / 2;
         int outputTop = (outputHeight - cellWidth * originalHeight) / 2;
@@ -423,9 +451,9 @@ public class CreateDCode {
      * @param sizes
      * @return
      */
-    public static Bitmap CreateQRCodeBitmap(String content, int[] sizes, Bitmap[] bitmaps, int bgColor) throws Exception {
-        int outputWidth = sizes[0], outputHeight = sizes[1];
+    public static Bitmap CreateQRCodeBitmap(String content, int[] sizes, Bitmap[] bitmaps, int bgColor, int padding) throws Exception {
         int count = bitmaps.length;
+        int outputWidth = sizes[0], outputHeight = sizes[1];
 
         Map<EncodeHintType, Object> hints = new HashMap<>();
         hints.put(EncodeHintType.CHARACTER_SET, "utf-8");
@@ -438,7 +466,10 @@ public class CreateDCode {
         outputWidth = Math.max(originalWidth, outputWidth);
         outputHeight = Math.max(originalHeight, outputHeight);
 
-        int cellWidth = Math.min(outputWidth / originalWidth, outputHeight / originalHeight);
+        int originalPadding = Math.min(outputWidth / (originalWidth + 2), outputHeight / (originalHeight + 2));
+        padding = Math.max(padding, originalPadding);
+
+        int cellWidth = Math.min((outputWidth - padding * 2) / originalWidth, (outputHeight - padding * 2) / originalHeight);
 
         int outputLeft = (outputWidth - cellWidth * originalWidth) / 2;
         int outputTop = (outputHeight - cellWidth * originalHeight) / 2;

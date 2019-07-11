@@ -23,6 +23,7 @@ public class MainActivity extends AppCompatActivity {
     private static final int SIZE = 1000;
 
     private static final int QR_COLOR = 0xff000000, BG_COLOR = 0x0;
+    private static final int PADDING = 50;
 
     private Bitmap[] bitmaps;
 
@@ -103,21 +104,27 @@ public class MainActivity extends AppCompatActivity {
         try {
             switch (typeId) {
                 case R.id.type_general:
-                    return CreateDCode.CreateQRCode(CONTENT, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR});
+                    return CreateDCode.CreateQRCode(CONTENT, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR},
+                            PADDING);
                 case R.id.type_dot:
                     float value = num / 100f;
-                    return CreateDCode.CreateQRCodeDot(CONTENT, value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR});
+                    return CreateDCode.CreateQRCodeDot(CONTENT, value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR},
+                            PADDING);
                 case R.id.type_polygon:
                     value = num / 100f * (10 - 3) + 3;
-                    return CreateDCode.CreateQRCodePolygon(CONTENT, (int) value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR});
+                    return CreateDCode.CreateQRCodePolygon(CONTENT, (int) value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR},
+                            PADDING);
                 case R.id.type_star:
                     value = num / 100f * (10 - 3) + 3;
-                    return CreateDCode.CreateQRCodeStar(CONTENT, (int) value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR});
+                    return CreateDCode.CreateQRCodeStar(CONTENT, (int) value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR},
+                            PADDING);
                 case R.id.type_smooth:
                     value = num / 100f;
-                    return CreateDCode.CreateQRCodeSmooth(CONTENT, value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR});
+                    return CreateDCode.CreateQRCodeSmooth(CONTENT, value, new int[]{SIZE, SIZE}, new int[]{QR_COLOR, BG_COLOR},
+                            PADDING);
                 case R.id.type_img:
-                    return CreateDCode.CreateQRCodeBitmap(CONTENT, new int[]{1000, 1000}, bitmaps, BG_COLOR);
+                    return CreateDCode.CreateQRCodeBitmap(CONTENT, new int[]{1000, 1000}, bitmaps, BG_COLOR,
+                            PADDING);
             }
         } catch (Exception e) {
             e.printStackTrace();
