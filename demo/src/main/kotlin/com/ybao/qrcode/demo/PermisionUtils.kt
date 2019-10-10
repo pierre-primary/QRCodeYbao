@@ -95,48 +95,4 @@ object PermisionUtils {
     fun isDisableVerifyMultiple(activity: Activity, permissions: Array<String>): Boolean {
         return permissions.any { ps -> isDisableVerify(activity, ps) }
     }
-    //
-//    fun verifyPermissions(permissions: Array<String>, action: () -> Unit) {
-//        try {
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-//                val needsRequestPermissions = ArrayList<String>()
-//                if (activity.application.applicationInfo.targetSdkVersion >= Build.VERSION_CODES.M) {
-//                    for (permission in permissions) {
-//                        if (activity.checkSelfPermission(permission) != PackageManager.PERMISSION_GRANTED) {
-//                            needsRequestPermissions.add(permission)
-//                        }
-//                    }
-//                    if (needsRequestPermissions.isNotEmpty()) {
-//                        this.action = action
-//                        activity.requestPermissions(needsRequestPermissions.toTypedArray(), 0)
-//                        return
-//                    }
-//                } else {
-//                    for (permission in permissions) {
-//                        if (PermissionChecker.checkSelfPermission(activity, permission) != PackageManager.PERMISSION_GRANTED) {
-//                            Snackbar.make(activity.window.decorView, "请到权限管理页开启权限", Snackbar.LENGTH_INDEFINITE).setAction("去开启") {
-//                                val intent = Intent()
-//                                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-//                                intent.action = android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS
-//                                intent.data = Uri.parse("package:" + activity.packageName)
-//                                activity.startActivity(intent)
-//                            }.show()
-//                            return
-//                        }
-//                    }
-//                }
-//            }
-//            action()
-//            return
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//        }
-//        this.action = null
-//        Snackbar.make(activity.window.decorView, "执行失败,请到权限管理页检查权限", Snackbar.LENGTH_LONG).show()
-//    }
-//
-//    fun verifyPermissions(checkPermission: String, action: () -> Unit) {
-//        verifyPermissions(arrayOf(checkPermission), action)
-//    }
-//
 }
